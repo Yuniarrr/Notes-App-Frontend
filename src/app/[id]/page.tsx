@@ -1,11 +1,13 @@
-import Image from 'next/image';
-import styles from './page.module.css';
-import { Flex } from '@chakra-ui/react';
-import NavBar from '@/components/navbar';
-import Content from '@/components/content';
+'use client';
 import Footer from '@/components/footer';
+import NavBar from '@/components/navbar';
+import { Flex, Text } from '@chakra-ui/react';
+import DetailContent from '@/components/detail-content';
+import { useParams } from 'next/navigation';
 
-export default function Home() {
+const NoteDetail = () => {
+  const params = useParams();
+
   return (
     <>
       <Flex
@@ -19,10 +21,12 @@ export default function Home() {
           align={'center'}
           justify={'start'}>
           <NavBar />
-          <Content />
+          <DetailContent params={params.id} />
         </Flex>
         <Footer />
       </Flex>
     </>
   );
-}
+};
+
+export default NoteDetail;
