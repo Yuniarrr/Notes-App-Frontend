@@ -1,4 +1,5 @@
 'use client';
+import config from '@/config';
 import {
   Box,
   Button,
@@ -10,12 +11,46 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import Link from 'next/link';
+import React from 'react';
+import getNoteById from '@/api/getNoteById';
+import updateNote from '@/api/updateNote';
+import { useRouter } from 'next/navigation';
 
 interface DetailContentProps {
   params: string | string[];
 }
 
 const DetailContent = ({ params }: DetailContentProps) => {
+  const [title, setTitle] = React.useState<string>('');
+  const [body, setBody] = React.useState<string>('');
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const data = await getNoteById(params);
+      if (data) {
+        setTitle(data.title);
+        setBody(data.body);
+      }
+    };
+
+    fetchData();
+  }, [params]);
+
+  const submit = async () => {
+    const data = {
+      title,
+      body,
+    };
+
+    await updateNote(params, data).then((res) => {
+      if (res) {
+        window.location.reload();
+      }
+      router.push('/');
+    });
+  };
+
   return (
     <>
       <Flex
@@ -55,6 +90,8 @@ const DetailContent = ({ params }: DetailContentProps) => {
           <FormControl>
             <FormLabel>Title</FormLabel>
             <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               type="text"
               width={'80%'}
             />
@@ -65,6 +102,8 @@ const DetailContent = ({ params }: DetailContentProps) => {
               width={'80%'}
               placeholder="Here is a sample placeholder"
               size="sm"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
             />
           </FormControl>
         </Flex>
@@ -77,7 +116,11 @@ const DetailContent = ({ params }: DetailContentProps) => {
           <Link href={'/'}>
             <Button colorScheme="red">Cancel</Button>
           </Link>
-          <Button colorScheme="green">Save</Button>
+          <Button
+            colorScheme="green"
+            onClick={submit}>
+            Save
+          </Button>
         </Flex>
       </Flex>
     </>

@@ -19,15 +19,57 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import React, { ChangeEvent } from 'react';
+import config from '@/config';
+import createNewNote from '@/api/createNewNote';
+import { useRouter } from 'next/navigation';
 
 const MenuLinks = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const finalRef = React.useRef(null);
-  const [value, setValue] = React.useState('');
+  const [title, setTitle] = React.useState('');
+  const [body, setBody] = React.useState('');
+  const router = useRouter();
+  const [titleRequired, setTitleRequired] = React.useState(false);
+  const [bodyRequired, setBodyRequired] = React.useState(false);
 
-  let handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    let inputValue = e.target.value;
-    setValue(inputValue);
+  React.useEffect(() => {
+    if (title) {
+      setTitleRequired(false);
+    }
+
+    if (body) {
+      setBodyRequired(false);
+    }
+  }, [title, body]);
+
+  const submit = async () => {
+    if (!title || !body) {
+      setTitleRequired(true);
+      setBodyRequired(true);
+      return;
+    }
+
+    if (!title) {
+      setTitleRequired(true);
+      return;
+    }
+
+    if (!body) {
+      setBodyRequired(true);
+      return;
+    }
+
+    const data = {
+      title,
+      body,
+    };
+
+    await createNewNote(data).then((res) => {
+      if (res) {
+        router.push('/');
+        window.location.reload();
+      }
+    });
   };
 
   return (
@@ -56,16 +98,37 @@ const MenuLinks = () => {
             <Flex direction={'column'}>
               <FormControl>
                 <FormLabel>Title</FormLabel>
-                <Input type="text" />
+                <Input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="New title"
+                />
+                {titleRequired && (
+                  <Box
+                    color="red.500"
+                    fontSize="sm"
+                    fontWeight="semibold">
+                    Title is required
+                  </Box>
+                )}
               </FormControl>
               <FormControl>
                 <FormLabel>Body</FormLabel>
                 <Textarea
-                  value={value}
-                  onChange={handleInputChange}
-                  placeholder="Here is a sample placeholder"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="New body"
                   size="sm"
                 />
+                {bodyRequired && (
+                  <Box
+                    color="red.500"
+                    fontSize="sm"
+                    fontWeight="semibold">
+                    Body is required
+                  </Box>
+                )}
               </FormControl>
             </Flex>
           </ModalBody>
@@ -77,7 +140,11 @@ const MenuLinks = () => {
               onClick={onClose}>
               Cancel
             </Button>
-            <Button variant="ghost">Save</Button>
+            <Button
+              colorScheme="green"
+              onClick={submit}>
+              Save
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

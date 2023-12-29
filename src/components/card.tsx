@@ -24,9 +24,10 @@ import React from 'react';
 import { RefObject } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { IoMdArrowRoundForward } from 'react-icons/io';
+import deleteNote from '@/api/deleteNote';
 
 interface CardComponentProps {
-  id: number;
+  id: string;
   title: string;
   body: string;
 }
@@ -38,6 +39,15 @@ const CardComponent: React.FC<CardComponentProps> = ({ id, title, body }) => {
 
   const handleCardClick = () => {
     router.push(`/${id}`);
+  };
+
+  const deleteNoteById = async () => {
+    await deleteNote(id).then((res) => {
+      onClose();
+      if (res) {
+        window.location.reload();
+      }
+    });
   };
 
   return (
@@ -121,7 +131,7 @@ const CardComponent: React.FC<CardComponentProps> = ({ id, title, body }) => {
               </Button>
               <Button
                 colorScheme="red"
-                onClick={onClose}
+                onClick={deleteNoteById}
                 ml={3}>
                 Delete
               </Button>
