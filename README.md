@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## How to run this project
+
+1. Check out the base url api for the project
+
+```bash
+Default: `http://localhost:3001`
+```
+
+You can change the default configuration for the project in `/src/config/index.ts`
+
+2. Run `npm install`
+
+3. Run `npm run dev`
 
 ## Getting Started
 
